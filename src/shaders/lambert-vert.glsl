@@ -1,4 +1,4 @@
-#version 300 es
+
 
 //This is a vertex shader. While it is called a "shader" due to outdated conventions, this file
 //is used to apply matrix transformations to the arrays of vertex data passed to it.
@@ -37,15 +37,22 @@ const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, whi
                                         //the geometry in the fragment shader.
 
 float wobbleAmount(vec4 pos){
-    return sin(3.*u_Time + 10.*(pos.x - pos.y + pos.z));
+    return sin(3.*u_Time + 0.4*(pos.x - pos.y + pos.z));
 }
 
 vec4 wobblePosition(vec4 pos){
     float amount = wobbleAmount(pos);
-    pos += vec4(u_Wobble * normalize(pos.xyz)*amount, 1.0);
+    pos += vec4(u_Wobble * normalize(pos.xyz)*amount, 0.0);
     return pos;
 }
 
+vec4 movePosition(vec4 pos, float amount){
+    return pos + vec4(normalize(pos.xyz)*amount, 0.0);
+}
+
+vec4 moveCurved(vec4 pos, float amount ,vec3 dir){
+    return vec4(0.,0.,0.1 * pos.z, 1.) + pos + vec4(min(0.5,0.3 + dot(normalize(pos.xyz),dir)) * normalize(pos.xyz)*amount, 0.0);
+}
 void main()
 {
     fs_Col = vs_Col;                         // Pass the vertex colors to the fragment shader for interpolation
@@ -58,7 +65,8 @@ void main()
                                                             // the model matrix.
 
     fs_Wobble = wobbleAmount(vs_Pos);
-    vec4 modifiedposition = wobblePosition(vs_Pos);
+    vec4 modifiedposition = movePosition(vs_Pos, u_Wobble * fs_Wobble);
+    modifiedposition = moveCurved(modifiedposition, 0.7*fbm_worley(vs_Pos.xyz), vec3(0.,0.,1.));
     vec4 modelposition = u_Model * modifiedposition;   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
