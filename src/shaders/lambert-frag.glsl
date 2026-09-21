@@ -26,17 +26,34 @@ in float fs_Wobble;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-float noise_gen3(vec3 point){
+float noise1(vec3 point){
     return fract(sin(dot(point, vec3(12.9898, 78.233, 193.31419))) * 43758.5453);
 }
 
-float noise_gen2(vec2 point){
+float noise1(vec2 point){
     return fract(sin(dot(point, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float noise_gen2(float x, float y){
-    return noise_gen2(vec2(x,y));
+float noise1(float x, float y){
+    return noise1(vec2(x,y));
 }
+
+//credit: xor_dev, https://mini.gmshaders.com/p/gm-shaders-mini-noise-1437243
+vec2 noise2(vec2 p){
+    return fract(sin(p * mat2(0.129898, 0.78233, 0.81314, 0.15926)) * 43758.5453);
+}
+
+vec2 noise2(float x, float y){ return noise2(vec2(x,y));}
+
+//
+vec3 noise3(vec3 p) {
+    return fract(sin(p * mat3(
+        127.135, 311.7931,  74.7391,
+        269.591, 183.3459, 246.1109,
+        113.520, 271.9018, 124.6345
+    )) * 43758.5453123);
+}
+
 vec3 nearest_rng_point(vec3 point){
     //Random grid originating point, used for voronoi and worley shaders.
     //For every integer vec3, hashes an offset from 0-1 in all 3 axes.
@@ -47,9 +64,9 @@ vec3 nearest_rng_point(vec3 point){
             for(int k = -1; k <= 1; k++){
                 //Sample an offset consistent to all frag neighbors ( because of floor(`) )
                 vec3 ivec = floor(point + vec3(i,j,k));
-                float pz = noise_gen2(ivec.x,ivec.y);
-                float py = noise_gen2(ivec.z,ivec.x);
-                float px = noise_gen2(ivec.y,ivec.z);
+                float pz = noise1(ivec.x,ivec.y);
+                float py = noise1(ivec.z,ivec.x);
+                float px = noise1(ivec.y,ivec.z);
                 vec3 worley_point = ivec + vec3(px,py,pz);
                 //The min dist for worley noise
                 float worley_dist = distance(point, worley_point);
@@ -74,13 +91,18 @@ float voronoi_noise_frag(vec3 point){
     //TODO: floating point errors should affect this hash.
     //Not sure why they dont.
     vec3 rng_point = 1.*nearest_rng_point(point);
-    return 0.8 * noise_gen3(rng_point) + 0.2; //Ranged 0.2-1.0 because it looks better
+    return 0.8 * noise1(rng_point) + 0.2; //Ranged 0.2-1.0 because it looks better
 }
 
 float white_noise_frag(vec3 point){
     float scale = 4.0f;
     vec3 ivec = floor(point * scale);
-    return noise_gen3(ivec);
+    return noise1(ivec);
+}
+
+float perlin_noise(vec3 point){
+
+    return 0.;
 }
 
 void main()
