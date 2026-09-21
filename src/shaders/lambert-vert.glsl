@@ -6,6 +6,8 @@
 //If it were run on your CPU, each vertex would have to be processed in a FOR loop, one at a time.
 //This simultaneous transformation allows your program to run much faster, especially when rendering
 //geometry with millions of vertices.
+uniform float u_Time;
+uniform float u_Wobble;
 
 uniform mat4 u_Model;       // The matrix that defines the transformation of the
                             // object we're rendering. In this assignment,
@@ -28,9 +30,21 @@ in vec4 vs_Col;             // The array of vertex colors passed to the shader.
 out vec4 fs_Nor;            // The array of normals that has been transformed by u_ModelInvTr. This is implicitly passed to the fragment shader.
 out vec4 fs_LightVec;       // The direction in which our virtual light lies, relative to each vertex. This is implicitly passed to the fragment shader.
 out vec4 fs_Col;            // The color of each vertex. This is implicitly passed to the fragment shader.
+out vec4 fs_Pos;
 
+out float fs_Wobble;
 const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, which is used to compute the shading of
                                         //the geometry in the fragment shader.
+
+float wobbleAmount(vec4 pos){
+    return sin(3.*u_Time + 10.*(pos.x - pos.y + pos.z));
+}
+
+vec4 wobblePosition(vec4 pos){
+    float amount = wobbleAmount(pos);
+    pos += vec4(u_Wobble * normalize(pos.xyz)*amount, 1.0);
+    return pos;
+}
 
 void main()
 {
@@ -43,11 +57,13 @@ void main()
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
 
-
-    vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
+    fs_Wobble = wobbleAmount(vs_Pos);
+    vec4 modifiedposition = wobblePosition(vs_Pos);
+    vec4 modelposition = u_Model * modifiedposition;   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
 
+    fs_Pos = modelposition;
     gl_Position = u_ViewProj * modelposition;// gl_Position is a built-in variable of OpenGL which is
                                              // used to render the final positions of the geometry's vertices
 }

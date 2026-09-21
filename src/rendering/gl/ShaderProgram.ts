@@ -29,6 +29,9 @@ class ShaderProgram {
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
+  unifTime: WebGLUniformLocation;
+  unifWobble: WebGLUniformLocation;
+  unifNoise: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -48,6 +51,11 @@ class ShaderProgram {
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
+    this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
+    this.unifWobble     = gl.getUniformLocation(this.prog, "u_Wobble");
+    this.unifNoise      = gl.getUniformLocation(this.prog, "u_Noise");
+
+
   }
 
   use() {
@@ -83,6 +91,27 @@ class ShaderProgram {
     if (this.unifColor !== -1) {
       gl.uniform4fv(this.unifColor, color);
     }
+  }
+
+  setTime(time : GLfloat){
+    this.use();
+    if(this.unifTime !== -1){
+      gl.uniform1f(this.unifTime, time);
+    }
+  }
+
+  setWobble(wobble : GLfloat){
+    this.use();
+    if(this.unifTime !== -1){
+      gl.uniform1f(this.unifWobble, wobble);
+    }
+  }
+
+  setNoise(type : GLint){
+    this.use();
+    if(this.unifNoise !== -1){
+      gl.uniform1i(this.unifNoise, type);
+    } 
   }
 
   draw(d: Drawable) {

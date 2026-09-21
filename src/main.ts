@@ -1,8 +1,10 @@
-import {vec3} from 'gl-matrix';
+import {vec3, vec4} from 'gl-matrix';
 import Stats from 'stats-js';
-import * as DAT from 'dat.gui';
+import GUI from 'lil-gui';
 import Icosphere from './geometry/Icosphere';
+import Cube from './geometry/Cube';
 import Square from './geometry/Square';
+
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
@@ -10,23 +12,52 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 
 import lambertVertSource from './shaders/lambert-vert.glsl?raw';
 import lambertFragSource from './shaders/lambert-frag.glsl?raw';
+import Drawable from './rendering/gl/Drawable';
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
+enum Objects{
+  SQUARE,
+  CUBE,
+  SPHERE
+}
+
 const controls = {
   tesselations: 5,
+  object : Objects.CUBE,
   'Load Scene': loadScene, // A function pointer, essentially
+  color : vec4.fromValues(1.0, 0, 0, 1.0),
+  wobble : 0.045,
+  noise : 1
 };
 
 let icosphere: Icosphere;
-let square: Square;
+let cube: Cube;
+let square : Square;
 let prevTesselations: number = 5;
+let prevColor : vec4 = vec4.fromValues(0.0, 0, 0, 1.0);
+let prevObject : Objects = Objects.CUBE;
+
+function enumToObject(e : Objects){
+  switch(e){
+    case Objects.CUBE:
+      return cube;
+    case Objects.SQUARE:
+      return square;
+    case Objects.SPHERE:
+      return icosphere;
+  }
+}
 
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
   icosphere.create();
+  cube = new Cube(vec3.fromValues(0, 0, 0));
+  cube.create();
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
+  prevColor = null;
+  prevObject = null;
 }
 
 function main() {
@@ -39,9 +70,13 @@ function main() {
   document.body.appendChild(stats.domElement);
 
   // Add controls to the gui
-  const gui = new DAT.GUI();
+  const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
+  gui.add(controls, 'object', {Square : Objects.SQUARE, Cube : Objects.CUBE, Sphere: Objects.SPHERE});
   gui.add(controls, 'Load Scene');
+  gui.addColor(controls, 'color').listen();
+  gui.add(controls, 'wobble', 0, 0.5);
+  gui.add(controls, 'noise', {Voronoi : 1, Worley : 2, Misc : 3});
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -62,6 +97,11 @@ function main() {
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
   gl.enable(gl.DEPTH_TEST);
 
+  //backface culling
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  gl.frontFace(gl.CCW);
+
   const lambert = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, lambertVertSource),
     new Shader(gl.FRAGMENT_SHADER, lambertFragSource),
@@ -79,10 +119,23 @@ function main() {
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
     }
-    renderer.render(camera, lambert, [
-      icosphere,
-      // square,
-    ]);
+
+    if(controls.object !== prevObject){
+      if(enumToObject(controls.object).color == null){
+        enumToObject(controls.object).color = vec4.fromValues(1.0, 0.0, 0.0, 1.0);
+      }
+      controls.color = enumToObject(controls.object).color;
+      prevObject = controls.object;
+
+    }
+
+    if(prevColor == null || !vec4.equals(controls.color, prevColor)){
+      enumToObject(controls.object).color = controls.color;
+      prevColor = controls.color;
+    }
+    lambert.setWobble(controls.wobble);
+    lambert.setNoise(controls.noise);
+    renderer.render(camera, lambert, [enumToObject(controls.object)]);
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
@@ -95,6 +148,7 @@ function main() {
     camera.updateProjectionMatrix();
   }, false);
 
+  
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.setAspectRatio(window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
