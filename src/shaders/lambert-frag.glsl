@@ -134,7 +134,7 @@ float perlin_noise(vec3 point){
     float m5 = mix(m1, m2, quint(offset).y);
     float m6 = mix(m3, m4, quint(offset).y);
     float m7 = mix(m5,m6,quint( offset).z);
-    return abs(m7);
+    return m7 + 0.5;
 }
 
 void main()
