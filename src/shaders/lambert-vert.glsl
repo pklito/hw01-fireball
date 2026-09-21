@@ -1,4 +1,4 @@
-
+//139
 
 //This is a vertex shader. While it is called a "shader" due to outdated conventions, this file
 //is used to apply matrix transformations to the arrays of vertex data passed to it.
@@ -8,7 +8,7 @@
 //geometry with millions of vertices.
 uniform float u_Time;
 uniform float u_Wobble;
-
+//149
 uniform mat4 u_Model;       // The matrix that defines the transformation of the
                             // object we're rendering. In this assignment,
                             // this will be the result of traversing your scene graph.
@@ -51,23 +51,55 @@ vec4 movePosition(vec4 pos, float amount){
 }
 
 vec4 moveCurved(vec4 pos, float amount ,vec3 dir){
-    return vec4(0.,0.,0.1 * pos.z, 1.) + pos + vec4(min(0.5,0.3 + dot(normalize(pos.xyz),dir)) * normalize(pos.xyz)*amount, 0.0);
+    float modifier = min(0.5,0.3 + dot(normalize(pos.xyz),dir));
+    return pos + vec4( modifier * normalize(pos.xyz)*amount, 0.0);
+
 }
+
+vec4 displaceVertex(vec4 pos){
+    vec4 modifiedposition = movePosition(pos, u_Wobble * fs_Wobble);
+    modifiedposition += vec4(0.,0.,0.4 * pos.z, 1.);
+    modifiedposition = moveCurved(modifiedposition, 0.7*fbm_worley(vs_Pos.xyz), vec3(0.,0.,1.));  //200
+    return modifiedposition;
+}
+vec3 directions[] = vec3[](
+vec3(-1,0,0),
+vec3(1,0,0),
+vec3(0,-1,0),
+vec3(0,1,0),
+vec3(0,0,-1),
+vec3(0,0,1)
+);
+
+vec4 displaceNormal(vec4 pos, vec4 normal){
+    float eplsilon = 0.05;
+
+    vec3 gradient = vec3(0.);
+    for(int i = 0; i < 3; i ++){
+        vec3 p1 = directions[2*i + 1];
+        float f1 = length(displaceVertex(vec4(pos.xyz + eplsilon * p1,1.0)).xyz - (pos.xyz + eplsilon * p1));
+        vec3 p2 = directions[2*i];
+        float f2 = length(displaceVertex(vec4(pos.xyz + eplsilon * p2,1.0)).xyz - (pos.xyz + eplsilon * p2));
+        gradient[i] = (f2-f1)/(2.*eplsilon);
+    }
+    
+    return vec4(gradient, 1.);
+}
+
 void main()
 {
     fs_Col = vs_Col;                         // Pass the vertex colors to the fragment shader for interpolation
 
     mat3 invTranspose = mat3(u_ModelInvTr);
-    fs_Nor = vec4(invTranspose * vec3(vs_Nor), 0);          // Pass the vertex normals to the fragment shader for interpolation.
+    fs_Nor = displaceNormal(vs_Pos, vec4(invTranspose * vec3(vs_Nor), 0));          // Pass the vertex normals to the fragment shader for interpolation.
                                                             // Transform the geometry's normals by the inverse transpose of the
                                                             // model matrix. This is necessary to ensure the normals remain
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
 
     fs_Wobble = wobbleAmount(vs_Pos);
-    vec4 modifiedposition = movePosition(vs_Pos, u_Wobble * fs_Wobble);
-    modifiedposition = moveCurved(modifiedposition, 0.7*fbm_worley(vs_Pos.xyz), vec3(0.,0.,1.));
-    vec4 modelposition = u_Model * modifiedposition;   // Temporarily store the transformed vertex positions for use below
+
+    vec4 modelposition = u_Model * displaceVertex(vs_Pos);   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
 

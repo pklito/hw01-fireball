@@ -16,7 +16,7 @@ out vec4 out_Col; // This is the final output color that you will see on your
 void main()
 {
         float noise = 0.5;
-        float perl =  1.;
+        float perl = fbm_perlin(fs_Pos.xyz);
         noise = perl;
         vec4 diffuseColor = vec4(noise * u_Color.rgb, u_Color.a);
 
