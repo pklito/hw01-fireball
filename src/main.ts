@@ -14,17 +14,8 @@ import lambertVertSource from './shaders/lambert-vert.glsl?raw';
 import lambertFragSource from './shaders/lambert-frag.glsl?raw';
 import Drawable from './rendering/gl/Drawable';
 
-// Define an object with application parameters and button callbacks
-// This will be referred to by dat.GUI's functions that add GUI elements.
-enum Objects{
-  SQUARE,
-  CUBE,
-  SPHERE
-}
-
 const controls = {
   tesselations: 5,
-  object : Objects.CUBE,
   'Load Scene': loadScene, // A function pointer, essentially
   color : vec4.fromValues(1.0, 0, 0, 1.0),
   wobble : 0.045,
@@ -36,28 +27,10 @@ let cube: Cube;
 let square : Square;
 let prevTesselations: number = 5;
 let prevColor : vec4 = vec4.fromValues(0.0, 0, 0, 1.0);
-let prevObject : Objects = Objects.CUBE;
-
-function enumToObject(e : Objects){
-  switch(e){
-    case Objects.CUBE:
-      return cube;
-    case Objects.SQUARE:
-      return square;
-    case Objects.SPHERE:
-      return icosphere;
-  }
-}
 
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
   icosphere.create();
-  cube = new Cube(vec3.fromValues(0, 0, 0));
-  cube.create();
-  square = new Square(vec3.fromValues(0, 0, 0));
-  square.create();
-  prevColor = null;
-  prevObject = null;
 }
 
 function main() {
@@ -72,7 +45,6 @@ function main() {
   // Add controls to the gui
   const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
-  gui.add(controls, 'object', {Square : Objects.SQUARE, Cube : Objects.CUBE, Sphere: Objects.SPHERE});
   gui.add(controls, 'Load Scene');
   gui.addColor(controls, 'color').listen();
   gui.add(controls, 'wobble', 0, 0.5);
@@ -120,22 +92,13 @@ function main() {
       icosphere.create();
     }
 
-    if(controls.object !== prevObject){
-      if(enumToObject(controls.object).color == null){
-        enumToObject(controls.object).color = vec4.fromValues(1.0, 0.0, 0.0, 1.0);
-      }
-      controls.color = enumToObject(controls.object).color;
-      prevObject = controls.object;
-
-    }
-
     if(prevColor == null || !vec4.equals(controls.color, prevColor)){
-      enumToObject(controls.object).color = controls.color;
+      icosphere.color = controls.color;
       prevColor = controls.color;
     }
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
-    renderer.render(camera, lambert, [enumToObject(controls.object)]);
+    renderer.render(camera, lambert, [icosphere]);
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
