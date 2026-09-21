@@ -100,15 +100,47 @@ float white_noise_frag(vec3 point){
     return noise1(ivec);
 }
 
-float perlin_noise(vec3 point){
+vec3 quint(vec3 p){
+    return p*p*p*(10. + p*(-15. + 6. * p));
+}
 
-    return 0.;
+vec3 corners[] = vec3[](
+vec3(0,0,0),
+vec3(1,0,0),
+vec3(0,1,0),
+vec3(1,1,0),
+vec3(0,0,1),
+vec3(1,0,1),
+vec3(0,1,1),
+vec3(1,1,1)
+);
+
+float perlin_noise(vec3 point){
+    vec3 corner = floor(point);
+    vec3 offset = fract(point);
+    float gradient0 = dot(offset - corners[0], normalize(noise3(corner + corners[0])-0.5));
+    float gradient1 = dot(offset - corners[1], normalize(noise3(corner + corners[1])-0.5));
+    float gradient2 = dot(offset - corners[2], normalize(noise3(corner + corners[2])-0.5));
+    float gradient3 = dot(offset - corners[3], normalize(noise3(corner + corners[3])-0.5));
+    float gradient4 = dot(offset - corners[4], normalize(noise3(corner + corners[4])-0.5));
+    float gradient5 = dot(offset - corners[5], normalize(noise3(corner + corners[5])-0.5));
+    float gradient6 = dot(offset - corners[6], normalize(noise3(corner + corners[6])-0.5));
+    float gradient7 = dot(offset - corners[7], normalize(noise3(corner + corners[7])-0.5));
+
+    float m1 = mix(gradient0, gradient1, quint(offset).x);
+    float m2 = mix(gradient2, gradient3, quint(offset).x);
+    float m3 = mix(gradient4, gradient5, quint(offset).x);
+    float m4 = mix(gradient6, gradient7, quint(offset).x); //sic seben
+    float m5 = mix(m1, m2, quint(offset).y);
+    float m6 = mix(m3, m4, quint(offset).y);
+    float m7 = mix(m5,m6,quint( offset).z);
+    return abs(m7);
 }
 
 void main()
 {
         float noise = 0.5;
-        noise = max(noise, 0.f);
+        noise = max(perlin_noise(10.*fs_Pos.xyz), 0.f);
         vec4 diffuseColor = vec4(noise * u_Color.rgb, u_Color.a);
 
         // Calculate the diffuse term for Lambert shading
