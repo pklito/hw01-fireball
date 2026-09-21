@@ -11,6 +11,7 @@ import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 
 import noiseSource from './shaders/noise.glsl?raw';
+import colorSource from './shaders/color.glsl?raw';
 import lambertVertSource from './shaders/lambert-vert.glsl?raw';
 import lambertFragSource from './shaders/lambert-frag.glsl?raw';
 import Drawable from './rendering/gl/Drawable';
@@ -77,8 +78,8 @@ function main() {
 
   const initSource = "#version 300 es \nprecision highp float;"
   const lambert = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, initSource + noiseSource + lambertVertSource),
-    new Shader(gl.FRAGMENT_SHADER,initSource + noiseSource + lambertFragSource),
+    new Shader(gl.VERTEX_SHADER, initSource + colorSource + noiseSource + lambertVertSource),
+    new Shader(gl.FRAGMENT_SHADER,initSource + colorSource + noiseSource + lambertFragSource),
   ]);
 
   // This function will be called every frame
