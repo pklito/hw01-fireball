@@ -62,7 +62,7 @@ function main() {
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Reset Scene');
   gui.add(controls, 'Shoot fireball');
-  gui.add(controls, 'temperature').listen();
+  gui.add(controls, 'temperature', 0, 50000).listen();
   gui.add(controls, 'wobble', 0, 0.5).listen();
   gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3}).listen();
 
@@ -79,7 +79,7 @@ function main() {
   // Initial call to load scene
   loadScene();
 
-  const camera = new Camera(vec3.fromValues(0, 0, 5), vec3.fromValues(0, 0, 0));
+  const camera = new Camera(vec3.fromValues(3, 1, -5), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
@@ -119,6 +119,7 @@ function main() {
     lambert.setNoise(controls.noise);
     lambert.setShoot(controls.shoot);
 
+    bg.setNoise(controls.noise);
     bg.setShoot(controls.shoot);
     bg.setGeometryTemp(controls.temperature);
     renderer.render(camera, bg, [background]);

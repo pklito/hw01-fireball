@@ -171,7 +171,7 @@ float user_chosen_noise(vec3 point){
         case 2:
         return fbm_perlin(point+ vec3(0.,0.,0.8*u_Time));
         case 3:
-        return perlin_noise(3.*point+ vec3(0.,0.,0.8*u_Time));
+        return perlin_noise(3.*point+ 3.*vec3(0.,0.,0.8*u_Time));
         default:
         return 0.5;
     }

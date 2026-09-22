@@ -22,7 +22,7 @@ void main()
     float explosionHeat = u_Temperature * remap(x, 0.6, 1.2, 4., 1.);
     float explosion = max(0., clamped_remap(sqrt(explosionHeat), sqrt(6000.), sqrt(70000.), 0., 0.4) + dot(frwd, vec3(0.,0.,explosionTiming)));
     explosion *= explosion;
-    explosion *= (explosion - fbm_worley(frwd + vec3(0.,0.,0.1*u_Time)));
+    explosion *= (explosion - user_chosen_noise(frwd + vec3(0.,0.,-0.1*u_Time)));
     color += kelvinToColor(u_Temperature * explosion);
     out_Col = vec4(color , 1.);
 }
