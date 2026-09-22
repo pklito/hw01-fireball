@@ -14,6 +14,9 @@ import noiseSource from './shaders/noise.glsl?raw';
 import colorSource from './shaders/color.glsl?raw';
 import lambertVertSource from './shaders/lambert-vert.glsl?raw';
 import lambertFragSource from './shaders/lambert-frag.glsl?raw';
+
+import BGVertSource from './shaders/background-vert.glsl?raw';
+import BGFragSource from './shaders/background-frag.glsl?raw';
 import Drawable from './rendering/gl/Drawable';
 
 const controls = {
@@ -25,14 +28,15 @@ const controls = {
 };
 
 let icosphere: Icosphere;
-let cube: Cube;
-let square : Square;
+let background : Square;
 let prevTesselations: number = 5;
 let prevColor : vec4 = vec4.fromValues(0.0, 0, 0, 1.0);
 
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
   icosphere.create();
+  background = new Square(vec3.fromValues(0, 0, 0));
+  background.create();
 }
 
 function main() {
@@ -82,6 +86,11 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER,initSource + colorSource + noiseSource + lambertFragSource),
   ]);
 
+  const bg = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, initSource + colorSource + noiseSource + BGVertSource),
+    new Shader(gl.FRAGMENT_SHADER,initSource + colorSource + noiseSource + BGFragSource),
+  ])
+
   // This function will be called every frame
   function tick() {
     camera.update();
@@ -102,6 +111,8 @@ function main() {
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
     renderer.render(camera, lambert, [icosphere]);
+    renderer.render(camera, bg, [background]);
+
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
