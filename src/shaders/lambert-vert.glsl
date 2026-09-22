@@ -59,7 +59,7 @@ vec4 moveCurved(vec4 pos, float amount ,vec3 dir){
 vec4 displaceVertex(vec4 pos){
     vec4 modifiedposition = movePosition(pos, u_Wobble * fs_Wobble);
     modifiedposition += vec4(0.,0.,0.4 * pos.z, 1.);
-    modifiedposition = moveCurved(modifiedposition, 0.7*fbm_worley(vs_Pos.xyz), vec3(0.,0.,1.));  //200
+    modifiedposition = moveCurved(modifiedposition, 0.7*user_chosen_noise(vs_Pos.xyz), vec3(0.,0.,1.));  //200
     return modifiedposition;
 }
 vec3 directions[] = vec3[](

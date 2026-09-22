@@ -1,5 +1,4 @@
 uniform vec4 u_Color; // The color with which to render this instance of geometry.
-uniform int u_Noise;
 
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
@@ -16,7 +15,7 @@ out vec4 out_Col; // This is the final output color that you will see on your
 void main()
 {
         float noise = 0.95;
-        vec3 heat = kelvinToColor((remap(fbm_worley(fs_Pos.xyz), 0., 1., 5000., -1000.)));
+        vec3 heat = kelvinToColor((remap(user_chosen_noise(fs_Pos.xyz), 0., 1., 5000., -1000.)));
         vec4 diffuseColor = vec4(noise * heat, u_Color.a);
 
         // Calculate the diffuse term for Lambert shading

@@ -136,3 +136,17 @@ float fbm_worley(vec3 point){
     }
     return total;
 }
+
+uniform highp int u_Noise;
+float user_chosen_noise(vec3 point){
+    switch(u_Noise){
+        case 1:
+        return fbm_worley(point);
+        case 2:
+        return fbm_perlin(point);
+        case 3:
+        return perlin_noise(3.*point);
+        default:
+        return 0.5;
+    }
+}

@@ -50,7 +50,7 @@ function main() {
   gui.add(controls, 'Load Scene');
   gui.addColor(controls, 'color').listen();
   gui.add(controls, 'wobble', 0, 0.5);
-  gui.add(controls, 'noise', {Voronoi : 1, Worley : 2, Misc : 3});
+  gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3});
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
