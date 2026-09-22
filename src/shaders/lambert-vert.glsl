@@ -7,6 +7,7 @@
 //This simultaneous transformation allows your program to run much faster, especially when rendering
 //geometry with millions of vertices.
 
+uniform float u_Temperature;
 uniform float u_Wobble;
 //149
 uniform mat4 u_Model;       // The matrix that defines the transformation of the
@@ -107,12 +108,13 @@ void main()
     fs_Wobble = wobbleAmount(vs_Pos);
     fs_Noise = user_chosen_noise(inverseDisplacement(vs_Pos).xyz);
 
-    float amount_forward = gain(0.1,triangle(0.5*u_Time));
+    float amount_forward = gain(0.1,triangle(clamped_remap(u_Temperature, 7000., 35000., 0.5, 4.)*u_Time));
     
     float x = u_Time - u_ShootTime;
 
     float isShooting = (1. - step(1.,x));
-    float evil_quint = x *(-1. + x*(1. + x*(10. + x*(0. + 10.*x))));
+    float y = clamped_remap(u_Temperature, 1000., 35000., 0.8, 4.) * x;
+    float evil_quint = y *(-1. + y*(1. + y*(10. + y*(0. + 10.*y))));
     amount_forward += 10.*(evil_quint)*isShooting;
 
     float size = (1. - pow(10., -30.*(x - 1.)*(x - 1.)));
