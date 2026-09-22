@@ -6,7 +6,7 @@
 //If it were run on your CPU, each vertex would have to be processed in a FOR loop, one at a time.
 //This simultaneous transformation allows your program to run much faster, especially when rendering
 //geometry with millions of vertices.
-uniform float u_Time;
+
 uniform float u_Wobble;
 //149
 uniform mat4 u_Model;       // The matrix that defines the transformation of the
@@ -32,6 +32,7 @@ out vec4 fs_LightVec;       // The direction in which our virtual light lies, re
 out vec4 fs_Col;            // The color of each vertex. This is implicitly passed to the fragment shader.
 out vec4 fs_Pos;
 
+out float fs_Noise;
 out float fs_Wobble;
 const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, which is used to compute the shading of
                                         //the geometry in the fragment shader.
@@ -58,10 +59,16 @@ vec4 moveCurved(vec4 pos, float amount ,vec3 dir){
 
 vec4 displaceVertex(vec4 pos){
     vec4 modifiedposition = movePosition(pos, u_Wobble * fs_Wobble);
-    modifiedposition += vec4(0.,0.,0.4 * pos.z, 1.);
+    modifiedposition += vec4(0.,0.,0.4 * pos.z, 0.);
     modifiedposition = moveCurved(modifiedposition, 0.7*user_chosen_noise(vs_Pos.xyz), vec3(0.,0.,1.));  //200
     return modifiedposition;
 }
+
+vec4 inverseDisplacement(vec4 pos){
+    return pos - vec4(0.,0.,0.4 * pos.z, 0.);
+}
+
+
 vec3 directions[] = vec3[](
 vec3(-1,0,0),
 vec3(1,0,0),
@@ -98,7 +105,7 @@ void main()
                                                             // the model matrix.
 
     fs_Wobble = wobbleAmount(vs_Pos);
-
+    fs_Noise = user_chosen_noise(inverseDisplacement(vs_Pos).xyz);
     vec4 modelposition = u_Model * displaceVertex(vs_Pos);   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies

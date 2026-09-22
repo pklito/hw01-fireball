@@ -8,15 +8,17 @@ in vec4 fs_Col;
 in vec4 fs_Pos;
 
 in float fs_Wobble;
-
+in float fs_Noise;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
 void main()
 {
-        float noise = 0.95;
-        vec3 heat = kelvinToColor((remap(user_chosen_noise(fs_Pos.xyz), 0., 1., 5000., -1000.)));
-        vec4 diffuseColor = vec4(noise * heat, u_Color.a);
+
+        float chosen_noise = fs_Noise;
+
+        vec3 heat = kelvinToColor((remap( chosen_noise, 0., 1., 5000., -1000.)));
+        vec4 diffuseColor = vec4(0.95 * heat, u_Color.a);
 
         // Calculate the diffuse term for Lambert shading
         float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
