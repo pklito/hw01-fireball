@@ -28,6 +28,7 @@ class ShaderProgram {
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
+  unifViewProjInv: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifTime: WebGLUniformLocation;
   unifWobble: WebGLUniformLocation;
@@ -50,6 +51,8 @@ class ShaderProgram {
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
+    this.unifViewProjInv   = gl.getUniformLocation(this.prog, "u_ViewProjInv");
+
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
     this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
     this.unifWobble     = gl.getUniformLocation(this.prog, "u_Wobble");
@@ -83,6 +86,11 @@ class ShaderProgram {
     this.use();
     if (this.unifViewProj !== -1) {
       gl.uniformMatrix4fv(this.unifViewProj, false, vp);
+    }
+    if (this.unifViewProjInv !== -1) {
+      let viewinv: mat4 = mat4.create();
+      mat4.transpose(viewinv, vp);
+      gl.uniformMatrix4fv(this.unifViewProjInv, false, viewinv);
     }
   }
 
