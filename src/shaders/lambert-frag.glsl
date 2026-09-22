@@ -16,7 +16,9 @@ void main()
 
         float chosen_noise = fs_Noise;
 
-        vec3 heat = kelvinToColor((remap( chosen_noise, 0., 1., u_Temperature, -1000.)));
+        float cooloff = clamped_remap(distance(fs_Pos.xyz, vec3(0.,0., -.6)), 0., 2., 0.00001, 1.);
+
+        vec3 heat = kelvinToColor(cooloff * (remap( chosen_noise, 0., 1., u_Temperature, -1000.)));
         vec4 diffuseColor = vec4(0.95 * heat, 1.);
 
         // Calculate the diffuse term for Lambert shading
