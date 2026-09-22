@@ -21,7 +21,7 @@ import Drawable from './rendering/gl/Drawable';
 
 const controls = {
   tesselations: 5,
-  'Load Scene': loadScene, // A function pointer, essentially
+  'Reset Scene': loadScene, // A function pointer, essentially
   temperature : 6000.0,
   wobble : 0.045,
   noise : 1
@@ -37,6 +37,9 @@ function loadScene() {
   icosphere.create();
   background = new Square(vec3.fromValues(0, 0, 0));
   background.create();
+  controls.noise = 1;
+  controls.temperature = 6000;
+  controls.wobble = 0.045;
 }
 
 function main() {
@@ -51,7 +54,7 @@ function main() {
   // Add controls to the gui
   const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
-  gui.add(controls, 'Load Scene');
+  gui.add(controls, 'Reset Scene');
   gui.add(controls, 'temperature');
   gui.add(controls, 'wobble', 0, 0.5);
   gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3});
