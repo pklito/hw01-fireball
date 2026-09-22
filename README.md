@@ -1,6 +1,5 @@
 # HW 1: WebGL Fireball
-
-<img width="893" height="902" alt="image" src="https://github.com/user-attachments/assets/93c20796-a9b6-49e0-a028-98a256129d6a" />
+<img width="1915" height="910" alt="image" src="https://github.com/user-attachments/assets/5a34c708-a7dc-4ebc-97bd-88cc73500b2f" />
 
 <p align="center">(source: Me)</p>
 
