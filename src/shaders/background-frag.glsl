@@ -19,10 +19,15 @@ void main()
     float x = u_Time - u_ShootTime;
     float isShooting = (1. - step(1.,x));
     float explosionTiming = smoothstep(0.5, 0.9, x) * (1. - smoothstep(0.9, 4., x));
-    float explosionHeat = u_Temperature * remap(x, 0.6, 1.2, 4., 1.);
-    float explosion = max(0., clamped_remap(sqrt(explosionHeat), sqrt(6000.), sqrt(70000.), 0., 0.4) + dot(frwd, vec3(0.,0.,explosionTiming)));
+    float explosionHeat = u_Temperature * clamped_remap(x, 0.6, 1.2, 4., 1.);
+    float explosionOverheat = clamped_remap(sqrt(explosionHeat), sqrt(6000.), sqrt(70000.), 0., 0.4);
+    float explosion = max(0., explosionOverheat + dot(frwd, vec3(0.,0.,explosionTiming)));
     explosion *= explosion;
     explosion *= (explosion - user_chosen_noise(frwd + vec3(0.,0.,-0.1*u_Time)));
-    color += kelvinToColor(u_Temperature * explosion);
+
+    float darken = clamped_remap(sqrt(u_Temperature), sqrt(1000.), sqrt(70000.), 0., 0.8);
+    float darkenTiming = smoothstep(0.5, 0.6, x) * (1. - smoothstep(1., 2., x));
+    darken *= darkenTiming;
+    color = (min(1., 1. - darken) - darken * explosionTiming) * color + kelvinToColor(u_Temperature * explosion);
     out_Col = vec4(color , 1.);
 }
