@@ -16,7 +16,7 @@ out vec4 out_Col; // This is the final output color that you will see on your
 void main()
 {
         float noise = 0.95;
-        vec3 heat = kelvinToColor((remap(fs_Pos.z, -1., 1.5, 5000., -1000.)));
+        vec3 heat = kelvinToColor((remap(fbm_worley(fs_Pos.xyz), 0., 1., 5000., -1000.)));
         vec4 diffuseColor = vec4(noise * heat, u_Color.a);
 
         // Calculate the diffuse term for Lambert shading
