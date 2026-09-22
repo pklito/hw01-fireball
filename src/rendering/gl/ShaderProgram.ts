@@ -1,4 +1,4 @@
-import {vec4, mat4} from 'gl-matrix';
+import {vec2, vec4, mat4} from 'gl-matrix';
 import Drawable from './Drawable';
 import {gl} from '../../globals';
 
@@ -31,6 +31,7 @@ class ShaderProgram {
   unifViewProjInv: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifTime: WebGLUniformLocation;
+  unifResolution: WebGLUniformLocation;
   unifWobble: WebGLUniformLocation;
   unifNoise: WebGLUniformLocation;
 
@@ -53,7 +54,8 @@ class ShaderProgram {
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifViewProjInv   = gl.getUniformLocation(this.prog, "u_ViewProjInv");
 
-    this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
+    this.unifResolution = gl.getUniformLocation(this.prog, "u_Resolution");
+    this.unifColor      = gl.getUniformLocation(this.prog, "u_Temperature");
     this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
     this.unifWobble     = gl.getUniformLocation(this.prog, "u_Wobble");
     this.unifNoise      = gl.getUniformLocation(this.prog, "u_Noise");
@@ -94,10 +96,10 @@ class ShaderProgram {
     }
   }
 
-  setGeometryColor(color: vec4) {
+  setGeometryTemp(heat :GLfloat) {
     this.use();
     if (this.unifColor !== -1) {
-      gl.uniform4fv(this.unifColor, color);
+      gl.uniform1f(this.unifColor, heat);
     }
   }
 
@@ -105,6 +107,13 @@ class ShaderProgram {
     this.use();
     if(this.unifTime !== -1){
       gl.uniform1f(this.unifTime, time);
+    }
+  }
+
+  setResolution(res : vec2){
+    this.use();
+    if(this.unifResolution !== -1){
+      gl.uniform2fv(this.unifResolution, res);
     }
   }
 

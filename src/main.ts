@@ -22,7 +22,7 @@ import Drawable from './rendering/gl/Drawable';
 const controls = {
   tesselations: 5,
   'Load Scene': loadScene, // A function pointer, essentially
-  color : vec4.fromValues(1.0, 0, 0, 1.0),
+  temperature : 6000.0,
   wobble : 0.045,
   noise : 1
 };
@@ -52,7 +52,7 @@ function main() {
   const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Load Scene');
-  gui.addColor(controls, 'color').listen();
+  gui.add(controls, 'temperature');
   gui.add(controls, 'wobble', 0, 0.5);
   gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3});
 
@@ -103,11 +103,8 @@ function main() {
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
     }
-
-    if(prevColor == null || !vec4.equals(controls.color, prevColor)){
-      icosphere.color = controls.color;
-      prevColor = controls.color;
-    }
+    lambert.setGeometryTemp(controls.temperature);
+    // lambert.setTemperature(controls.)
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
     renderer.render(camera, bg, [background]);
