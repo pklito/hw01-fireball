@@ -23,7 +23,7 @@ const controls = {
   tesselations: 5,
   'Reset Scene': loadScene, // A function pointer, essentially
   temperature : 6000.0,
-  wobble : 0.045,
+  wobble : 0.113,
   noise : 1
 };
 
@@ -38,8 +38,8 @@ function loadScene() {
   background = new Square(vec3.fromValues(0, 0, 0));
   background.create();
   controls.noise = 1;
-  controls.temperature = 6000;
-  controls.wobble = 0.045;
+  controls.temperature = 7000;
+  controls.wobble = 0.113;
 }
 
 function main() {

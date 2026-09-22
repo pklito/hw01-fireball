@@ -38,7 +38,7 @@ const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, whi
                                         //the geometry in the fragment shader.
 
 float wobbleAmount(vec4 pos){
-    return sin(3.*u_Time + 0.4*(pos.x - pos.y + pos.z));
+    return sin(3.*u_Time + 0.4*(pos.x + pos.y + pos.z));
 }
 
 vec4 wobblePosition(vec4 pos){
@@ -58,7 +58,7 @@ vec4 moveCurved(vec4 pos, float amount ,vec3 dir){
 }
 
 vec4 displaceVertex(vec4 pos){
-    vec4 modifiedposition = movePosition(pos, u_Wobble * fs_Wobble);
+    vec4 modifiedposition = movePosition(pos, u_Wobble * wobbleAmount(vs_Pos));
     modifiedposition += vec4(0.,0.,0.4 * pos.z, 0.);
     modifiedposition = moveCurved(modifiedposition, 0.7*user_chosen_noise(vs_Pos.xyz), vec3(0.,0.,1.));  //200
     return modifiedposition;
