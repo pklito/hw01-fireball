@@ -118,6 +118,9 @@ function main() {
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
     lambert.setShoot(controls.shoot);
+
+    bg.setShoot(controls.shoot);
+    bg.setGeometryTemp(controls.temperature);
     renderer.render(camera, bg, [background]);
     renderer.render(camera, lambert, [icosphere]);
 
