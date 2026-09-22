@@ -106,7 +106,10 @@ void main()
 
     fs_Wobble = wobbleAmount(vs_Pos);
     fs_Noise = user_chosen_noise(inverseDisplacement(vs_Pos).xyz);
-    vec4 modelposition = u_Model * displaceVertex(vs_Pos);   // Temporarily store the transformed vertex positions for use below
+
+    float amount_forward = gain(0.1,triangle(0.5*u_Time));
+    vec3 moving_position = vec3(0.,0.,0.8*amount_forward);
+    vec4 modelposition = u_Model * displaceVertex(vs_Pos) + vec4(moving_position,0.);   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
 

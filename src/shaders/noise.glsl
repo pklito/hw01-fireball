@@ -76,6 +76,31 @@ vec3 quint(vec3 p){
     return p*p*p*(10. + p*(-15. + 6. * p));
 }
 
+float quint(float p){
+    return p*p*p*(10. + p*(-15. + 6. * p));
+}
+
+float triangle(float p){
+    return 2.*abs(fract(0.5*p)-0.5);
+}
+
+//easings.net
+float easeInOutCubic(float x) {
+    if(x< 0.5)
+        return 4.*x*x*x;
+    return 1. - pow(-2.*x + 2., 3.) / 2.;
+}
+
+float bias(float b, float x){
+    return x / ((1./b - 2.)*(1.-x)+1.);
+}
+
+float gain(float g, float x){
+    if(x < 0.5)
+        return 0.5*bias(g,2.*x);
+    return 1.-0.5*(bias(g,2.-2.*x));
+}
+
 vec3 corners[] = vec3[](
 vec3(0,0,0),
 vec3(1,0,0),
