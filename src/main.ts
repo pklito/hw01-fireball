@@ -55,9 +55,9 @@ function main() {
   const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Reset Scene');
-  gui.add(controls, 'temperature');
-  gui.add(controls, 'wobble', 0, 0.5);
-  gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3});
+  gui.add(controls, 'temperature').listen();
+  gui.add(controls, 'wobble', 0, 0.5).listen();
+  gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3}).listen();
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
