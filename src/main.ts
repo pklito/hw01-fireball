@@ -22,15 +22,21 @@ import Drawable from './rendering/gl/Drawable';
 const controls = {
   tesselations: 5,
   'Reset Scene': loadScene, // A function pointer, essentially
+  'Shoot fireball' : shootFireball,
   temperature : 6000.0,
   wobble : 0.113,
-  noise : 1
+  noise : 1,
+  shoot : -1000,
 };
 
 let icosphere: Icosphere;
 let background : Square;
 let prevTesselations: number = 5;
 let prevColor : vec4 = vec4.fromValues(0.0, 0, 0, 1.0);
+
+function shootFireball(){
+  controls.shoot = 0.001 * performance.now();
+}
 
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
@@ -55,6 +61,7 @@ function main() {
   const gui = new GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Reset Scene');
+  gui.add(controls, 'Shoot fireball');
   gui.add(controls, 'temperature').listen();
   gui.add(controls, 'wobble', 0, 0.5).listen();
   gui.add(controls, 'noise', {FMB_Worley : 1, FBM_Perlin : 2, Perlin : 3}).listen();
@@ -110,6 +117,7 @@ function main() {
     // lambert.setTemperature(controls.)
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
+    lambert.setShoot(controls.shoot);
     renderer.render(camera, bg, [background]);
     renderer.render(camera, lambert, [icosphere]);
 

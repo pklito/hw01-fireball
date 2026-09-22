@@ -162,6 +162,7 @@ float fbm_worley(vec3 point){
     return total;
 }
 uniform float u_Time;
+uniform float u_ShootTime;
 uniform highp int u_Noise;
 float user_chosen_noise(vec3 point){
     switch(u_Noise){

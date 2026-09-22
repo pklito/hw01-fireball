@@ -108,8 +108,18 @@ void main()
     fs_Noise = user_chosen_noise(inverseDisplacement(vs_Pos).xyz);
 
     float amount_forward = gain(0.1,triangle(0.5*u_Time));
+    
+    float x = u_Time - u_ShootTime;
+
+    float isShooting = (1. - step(1.,x));
+    float evil_quint = x *(-1. + x*(1. + x*(10. + x*(0. + 10.*x))));
+    amount_forward += 10.*(evil_quint)*isShooting;
+
+    float size = (1. - pow(10., -30.*(x - 1.)*(x - 1.)));
     vec3 moving_position = vec3(0.,0.,0.8*amount_forward);
-    vec4 modelposition = u_Model * displaceVertex(vs_Pos) + vec4(moving_position,0.);   // Temporarily store the transformed vertex positions for use below
+    vec4 modelposition = u_Model * displaceVertex(vec4(vec3(size), 1.)*vs_Pos) + vec4(moving_position,0.);   // Temporarily store the transformed vertex positions for use below
+    
+
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
 

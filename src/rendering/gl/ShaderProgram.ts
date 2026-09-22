@@ -31,6 +31,8 @@ class ShaderProgram {
   unifViewProjInv: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifTime: WebGLUniformLocation;
+  unifShoot: WebGLUniformLocation;
+
   unifResolution: WebGLUniformLocation;
   unifWobble: WebGLUniformLocation;
   unifNoise: WebGLUniformLocation;
@@ -57,6 +59,8 @@ class ShaderProgram {
     this.unifResolution = gl.getUniformLocation(this.prog, "u_Resolution");
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Temperature");
     this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
+    this.unifShoot      = gl.getUniformLocation(this.prog, "u_ShootTime");
+
     this.unifWobble     = gl.getUniformLocation(this.prog, "u_Wobble");
     this.unifNoise      = gl.getUniformLocation(this.prog, "u_Noise");
 
@@ -107,6 +111,13 @@ class ShaderProgram {
     this.use();
     if(this.unifTime !== -1){
       gl.uniform1f(this.unifTime, time);
+    }
+  }
+
+  setShoot(time : GLfloat){
+    this.use();
+    if(this.unifShoot !== -1){
+      gl.uniform1f(this.unifShoot, time);
     }
   }
 

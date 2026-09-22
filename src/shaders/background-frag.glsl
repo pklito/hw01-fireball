@@ -11,7 +11,7 @@ void main()
 
     frwd = normalize((u_ViewProjInv * vec4(frwd, 0.)).xyz);    
 
-    float bg = worley_noise_frag(frwd);
+    float bg = worley_noise_frag(frwd + vec3(0.,0.,0.1*u_Time));
     vec3 color =bg * mix(vec3(1.0,0.,0.), vec3(0.7,0.5,0.8), 0.5*(frwd.z + 1.));
     out_Col = vec4(color , 1.);
 }
