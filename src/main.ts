@@ -110,8 +110,8 @@ function main() {
     }
     lambert.setWobble(controls.wobble);
     lambert.setNoise(controls.noise);
-    renderer.render(camera, lambert, [icosphere]);
     renderer.render(camera, bg, [background]);
+    renderer.render(camera, lambert, [icosphere]);
 
     stats.end();
 
